@@ -28,13 +28,14 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
     N_pair = size(pair);
     
     resolution = tau_resolution;
-    freq_H = freq_H;
-    freq_L = freq_L;
+%     freq_H = freq_H;
+%     freq_L = freq_L;
 
     % stft
+%     wlen = 1024;
 
 
-    nfft = wlen;
+    nfft = 1024;
     c = 343;                % 声速
 
     count = 0;
@@ -42,6 +43,7 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
     %% generate process 
     subdir = dir(inSig_folder);
     for i = 1:length(subdir)
+%     for i = 1:1
         if subdir(i).isdir||isequal( subdir( i ).name, '.' )||...
             isequal( subdir( i ).name, '..')
             continue;
@@ -94,7 +96,8 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
             else
                 assert(-1==1,'noise mix error')
             end
-            [F,T,mic_stft] = ssl_stft(mix_signal,window, noverlap, nfft, fs);
+            [F,T,mic_stft] = ssl_stft(mix_signal,wlen, noverlap, nfft, fs);
+
             [n_freq,n_t,n_ch] = size(mic_stft);
             
             freq_H_indx = find(F<freq_H,1,"last");
@@ -123,9 +126,24 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
                 y = reshape(y,[],N_pair(1));
                 X2(:,tou_indx) = sum(y,1);
             end
-            save([output_dir,'/',num2str(SNR),'/',num2str(count),'.mat'],'X2',"source_pos",'tou_idea','fs','resolution','freq_H','freq_L','SNR','tou');
-
+%             save([output_dir,'/',num2str(SNR),'/',num2str(count),'.mat'],'X2',"source_pos",'tou_idea','fs','resolution','freq_H','freq_L','SNR','tou');
+%             X2(ch,:)
+%             plot(tou, X2(20,:))
+%             tou_idea = (delay_time(pair(:,1))-delay_time(pair(:,2)))*fs;
+            ch = 30;
+            tou_i = tou_idea(ch)
+            [~,in] = max(X2(ch,:));
+            in = tou(in)
+            figure(1);
+            subplot(4,floor(length(SNRs)/3),s)
+            plot(tou,X2(ch,:)); 
+            hold on
+            line([tou_i,tou_i],[min(X2(ch,:)),max(X2(ch,:))],'Color','red')
+            title(['SNR',num2str(SNR)])
+            hold off
         end
+        
+%         plot(tou, X2(20,:))
     end
 
 
