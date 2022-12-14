@@ -11,11 +11,10 @@ freq_H = 8000;
 freq_L = 100;
 Length = 20480;
 out_fs = 48000;
-wlen = 512*2;
-window = hann(wlen);
+wlen = 512*4;
 noverlap = 0.5*wlen;
 %% path_process
-generate_GCCsignal(signal_folder,noise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,window,noverlap)
+generate_GCCsignal(signal_folder,noise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap)
 
 %%
 
