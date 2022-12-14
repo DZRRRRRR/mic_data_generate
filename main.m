@@ -9,12 +9,15 @@ SNRs = [30,10,5,0,-5,-10,-15,-20,-25,-30,-35,-40,-45,-50];
 tau_resolution = 0.1;
 freq_H = 8000;
 freq_L = 100;
-Length = 20480;
+Length = 10240;
 out_fs = 48000;
 wlen = 512*4;
 noverlap = 0.5*wlen;
+is_save = 0;
+is_display = 1;
+ch = 30;
 %% path_process
-generate_GCCsignal(signal_folder,noise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap)
+generate_GCCsignal(signal_folder,noise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap,is_save,is_display,ch)
 
 %%
 

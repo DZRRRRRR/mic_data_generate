@@ -1,4 +1,4 @@
-function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap)
+function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap,is_save,is_display,ch)
     
     %% path process
     if  strcmp('Gauss',inNoise_file)
@@ -33,7 +33,7 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
 
     % stft
 
-
+    window = hann(wlen);
     nfft = wlen;
     c = 343;                % 声速
 
@@ -123,8 +123,22 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
                 y = reshape(y,[],N_pair(1));
                 X2(:,tou_indx) = sum(y,1);
             end
-            save([output_dir,'/',num2str(SNR),'/',num2str(count),'.mat'],'X2',"source_pos",'tou_idea','fs','resolution','freq_H','freq_L','SNR','tou');
-
+            if is_save
+                save([output_dir,'/',num2str(SNR),'/',num2str(count),'.mat'],'X2',"source_pos",'tou_idea','fs','resolution','freq_H','freq_L','SNR','tou');
+            end
+            if is_display
+                ch = ch;
+                tou_i = tou_idea(ch)
+                [~,in] = max(X2(ch,:));
+                in = tou(in)
+                figure(1);
+                subplot(4,floor(length(SNRs)/3),s)
+                plot(tou,X2(ch,:)); 
+                hold on
+                line([tou_i,tou_i],[min(X2(ch,:)),max(X2(ch,:))],'Color','red')
+                title(['SNR',num2str(SNR)])
+                hold off
+            end
         end
     end
 
