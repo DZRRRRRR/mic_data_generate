@@ -1,4 +1,4 @@
-function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap,is_save,is_display,ch)
+function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolution,freq_H,freq_L,array_pos,Length,out_fs,wlen,noverlap,is_save,is_display,ch,max_shift_sample)
     
     %% path process
     if  strcmp('Gauss',inNoise_file)
@@ -77,12 +77,13 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
         [~,N_samples] = size(mic_signal);
         tou_idea = (delay_time(pair(:,1))-delay_time(pair(:,2)))*fs;
         %% SNR mix
-        start_indx = ceil((ego_noise_N_sample-N_samples)*rand());
-        end_indx = start_indx + N_samples-1;
-        ego_noise = ego_all_noise.mic_all_data(:,start_indx:end_indx);
-        en_signal = sum(sum(mic_signal.^2));
-        en_noise = sum(sum(ego_noise.^2));
-        
+        if strcmp(noiseType,'file')
+            start_indx = ceil((ego_noise_N_sample-N_samples)*rand());
+            end_indx = start_indx + N_samples-1;
+            ego_noise = ego_all_noise.mic_all_data(:,start_indx:end_indx);
+            en_signal = sum(sum(mic_signal.^2));
+            en_noise = sum(sum(ego_noise.^2));
+        end
         %% processing
         for s = 1:length(SNRs)
             count = count+1;
@@ -104,7 +105,10 @@ function generate_GCCsignal(inSig_folder,inNoise_file,output_dir,SNRs,tau_resolu
             d_mic_pos2 = d_mic_pos.^2;
             d_mic_pos_max = max(sqrt(d_mic_pos2(:,1)+d_mic_pos2(:,2)));
             tou_max = d_mic_pos_max/c;
-            max_shift_sample = floor(tou_max*fs);
+            if max_shift_sample <=0
+                max_shift_sample = floor(tou_max*fs);
+            end
+%             max_shift_sample = 50;
             X2 = zeros(N_pair(1),2*max_shift_sample+1);
             
             mic_signal_stft_pair1 = mic_stft(freq_L_indx:freq_H_indx,:,pair(:,1));
